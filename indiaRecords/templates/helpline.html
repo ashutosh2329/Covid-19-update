@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}
+India-Helpline
+{% endblock %}
+{% load mathfilters %}
+{% load static %}
+
+{% block content %}
+
+<style media="screen">
+
+.width90{
+  width:90%;
+}
+
+.scroll{
+  height:650px;
+  border:solid 2px #3f51b5;
+  overflow:scroll;
+  overflow-x:hidden;
+  overflow-y:scroll;
+}
+.pdd20{
+  padding-left:20px;
+}
+
+
+</style>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col s12 l12 m12">
+      <h4 class="indigo-text shadow">Helplines</h4>
+      <h6>Ministry of Health & Family Welfare has provided these helpline numbers of States & Union Territories (UTs).</h6>
+    </div>
+    <div class="col s12 shadow">
+
+    <h4 class="waves-effect btn white indigo-text btn-large" > National Helpline Number </h4>
+    <b>
+    <h5 class="indigo-text pdd20"> 1075  |  1800-112-545 </h5></b>
+    <h5 class="waves-effect btn white indigo-text btn-large"> Central Helpline Number </h5> <b>
+      <h5 class="indigo-text pdd20"> +91-11-23978043  |  +91-11-23978046 </h5></b>
+    <h5 class="waves-effect btn white indigo-text btn-large"> Central Helpline Email </h5> <b>
+      <h5 class="indigo-text pdd20"> ncov2019@gmail.com </h5></b>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="container width90">
+  <div class="row">
+    <div class="col s12 m6 l6">
+
+      <ul class="collapsible" id="test">
+        <li>
+          <div class="collapsible-header"><h5 class="indigo-text">Test Centers<i class="material-icons">arrow_downward</i></h5></div>
+          <div class="collapsible-body scroll">
+          <div class="row padding_zero">
+            <div class="col s6">
+              <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for city.." title="Type in a city">
+           </div>
+         </div>
+            {% for testcenter in testcenters %}
+            <div class="s12 m12 l12">
+                <div class="card horizontal">
+                  <div class="card-stacked">
+
+                      <h6>
+                        City <a class="black-text" href=""> - {{ testcenter.city }} </a> <br>
+                        State - {{ testcenter.state.name }} <br>
+                        Name -{{ testcenter.nameoforganization }} <br>
+                        Phone No. - {{ testcenter.phonenumber }} <br>
+
+                      </h6>
+
+
+                    <div class="card-action">
+                    </div>
+                  </div>
+                </div>
+            </div>
+            {% endfor %}
+          </div>
+        </li>
+        </ul>
+      </div>
+      <div class="col s12 m6 l6">
+
+        <ul class="collapsible" id="test2">
+          <li>
+            <div class="collapsible-header"> <h5 class="indigo-text">Helpline<i class="material-icons">arrow_downward</i></h5></div>
+            <div class="collapsible-body scroll">
+              <div class="row padding_zero">
+            <div class="col s6">
+              <input type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Search for city.." title="Type in a city">
+           </div>
+         </div>
+              {% for testcenter in helplines %}
+              <div class="s12 m12 l12">
+                  <div class="card horizontal">
+                    <div class="card-stacked">
+
+                        <h6>
+                          City <a class = "black-text" href="">  - {{ testcenter.city }}</a> <br>
+                          State - {{ testcenter.state.name }} <br>
+                          Name -{{ testcenter.nameoforganization }} <br>
+                          Phone No. - {{ testcenter.phonenumber }} <br>
+
+                        </h6>
+
+
+                      <div class="card-action">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              {% endfor %}
+            </div>
+          </li>
+          </ul>
+        </div>
+
+  </div>
+
+</div>
+
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("test");
+    li = ul.getElementsByTagName("h6");
+
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+<script>
+function myFunction2() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput2");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("test2");
+    li = ul.getElementsByTagName("h6");
+    
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+
+
+{% endblock %}

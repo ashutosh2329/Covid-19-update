@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% block title %}
+{{state.name}} covid19 Updates
+{% endblock %}
+{% load mathfilters %}
+{% load static %}
+
+{% block content %}
+
+<style media="screen">
+
+  .margin_right{
+    margin-right:2px;
+  }
+  .width90{
+    width:90%;
+  }
+</style>
+
+
+<div class="container widthextra">
+  <div class="heading padding_zero-fixed">
+    <h4 class="shadow">
+      Daily Counter | {{ state.name}}
+    </h4>
+    *Last updated on {{lastupdated}}
+
+
+    <div class="row">
+        <div class="col s6 m4 l2">
+          <div class="card ">
+            <div class="card-content shadowblue">
+              <span class="card-title counter-count">{{ state.confirmed }}</span>
+              <p>
+                Confirmed Cases <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowpurple">
+              <span class="card-title counter-count">{{ state.active }}</span>
+              <p>
+                Active Cases <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowgreen">
+              <span class="card-title counter-count">{{ state.recovered}}</span>
+              <p>
+                Recovered <br>
+
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowred">
+              <span class="card-title counter-count">{{ state.deaths}}</span>
+              <p>
+                Deaths <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowred">
+              <span class="card-title"> {{ state.recovered|div:state.confirmed|mul:100|floatformat:2 }}%</span>
+              <p>
+                Recovery Rate <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowred">
+              <span class="card-title">{{ state.deaths|div:state.confirmed|mul:100|floatformat:2 }}%</span>
+              <p>
+                Death Rate <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+
+    </div>
+    <!-- row -->
+    </div>
+    <!-- heading end -->
+
+
+
+    <div class="row">
+      <div class="col s6 m6 l6 hide-on-small-only">
+
+        <div class="card">
+        <div class="card-tabs">
+          <ul class="tabs tabs-fixed-width">
+            <li class="tab"><a class="active" href="#myChart_line">Growth Chart</a></li>
+          </ul>
+        </div>
+        <div class="card-content ">
+
+          <!-- <div id="test5">Test 2</div> -->
+          <canvas id="myChart_line" width="400" height="300"></canvas>
+
+        </div>
+        </div>
+
+      </div>
+      
+        <div class="container width90">
+          <div class="col s12 m6 l6">
+        <div class="row padding_zero">
+         <div class="col s6">
+           <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for District.." title="Type in a district">
+         </div>
+       </div>
+
+
+        <table class="highlight">
+          <thead>
+            <tr>
+                <th>District</th>
+                <th>Confirmed Case</th>
+            </tr>
+          </thead>
+
+          <tbody id="district">
+            {% for district in districts %}
+            <tr>
+              <td><a href="#">{{ district.name }}</a></td>
+              <td>{{ district.confirmed }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+
+
+  </div>
+
+  <div class="row">
+    <div class="col s12 l12 m12">
+      <div class="divider margin_top"> </div>
+
+      <h4 class="shadow"> Daily detected Cases | {{state.name}}</h4>
+
+    </div>
+
+
+    <div class="col s12 l12 m12 hide-on-small-only">
+      <canvas id="myChart_daily_bar" width="100%" height="40%"> </canvas>
+    </div>
+
+
+    <div class="col s12 hide-on-med-and-up">
+      <canvas id="myChart_daily_bar1" width="400" height="400" style="margin: 1em"> </canvas>
+    </div>
+
+  </div>
+</div>
+<!-- container -->
+
+<!-- line Chart -->
+<script>
+var ctx = document.getElementById('myChart_line').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+      labels: {{ datelabel |safe}},
+      datasets: [{
+          label: 'Total Cases',
+          data: {{ datacumm | safe}},
+          backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+      }]
+  },
+  options: {
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true
+              }
+          }]
+      }
+  }
+});
+</script>
+
+<!-- line Chart  -->
+
+
+<script>
+var ctx = document.getElementById('myChart_daily_bar').getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'bar',
+data: {
+    labels: {{ datelabel |safe}},
+    datasets: [{
+        label: 'No of Cases',
+        data:  {{ datadaily |safe}},
+        backgroundColor: {{barcolorlist|safe}},
+            borderColor: {{barcolorlist|safe}},
+        borderWidth: 1,
+    }]
+},
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
+        }]
+    }
+}
+});
+</script>
+
+
+
+<script>
+var ctx = document.getElementById('myChart_daily_bar1').getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'bar',
+data: {
+    labels: {{ datelabel |safe}},
+    datasets: [{
+        label: 'No of Cases',
+        data:  {{ datadaily |safe}},
+        backgroundColor: {{barcolorlist|safe}},
+            borderColor: {{barcolorlist|safe}},
+        borderWidth: 1,
+    }]
+},
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
+        }]
+    }
+}
+});
+</script>
+
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("district");
+    li = ul.getElementsByTagName("tr");
+
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,324 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name=”description” content="Covid-19 regular updates for India | Check the status of your locality">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <title>Covid-19|{% block title %}{% endblock %}</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+
+
+
+<style media="screen">
+
+  .card{
+    margin: 0!important;;
+    padding: 0!important;
+    border: 0!important;
+    box-shadow: none!important;
+    font-weight: bold;
+  }
+  .padding_zero{
+    padding:0px;
+    margin:0px;
+  }
+
+  tbody {
+      display:block;
+      height:380px;
+      overflow:auto;
+    }
+    thead, tbody tr {
+      display:table;
+      width:100%;
+      table-layout:fixed;
+    }
+
+    table {
+      width:100%;
+    }
+
+    .tabs .tab a {
+      color: black;
+      /*Custom Text Color*/
+    }
+
+    .tabs .tab a:hover {
+      color:black;
+      /*Custom Color On Hover*/
+    }
+
+    .tabs .tab a:focus.active {
+      color:black;
+      /*Custom Text Color While Active*/
+      background-color: #9fa8da;
+      /*Custom Background Color While Active*/
+    }
+    .tabs .tab a.active {
+          background-color:#e8eaf6;
+          color:#000;
+      } /*Background and text color when a tab is active*/
+
+    .tabs .indicator {
+      background-color:#9fa8da;
+      /*Custom Color Of Indicator*/
+    }
+    .widthextra{
+      width:90%
+    }
+    .pdd{
+      margin-bottom:20px;
+    }
+    .padding_top{
+      margin-top:20px;
+    }
+
+    .heightMatch{
+      height:500px;
+    }
+    .subtable{
+      height: 300px;
+    }
+    .margin_top{
+      margin-top:30px;
+    }
+    .modal {
+      width: fit-content;
+      height: fit-content;
+      padding: 10px;
+     }
+     .deathtext{
+       color:#b71c1c;
+     }
+</style>
+<body>
+
+  <div class="navbar">
+    <nav class="nav-wrapper indigo">
+      <div class="container">
+        <a href="{% url 'india_status' %}" class="brand-logo">Covid19Track</a>
+        <a href="#" class="sidenav-trigger" data-target="mobile-links">
+          <i class="material-icons">menu</i>
+        </a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="{% url 'india_status' %}">India-stats</a></li>
+          <li><a href="{% url 'states_table' %}">States-stats</a></li>
+          <!-- <li><a href="{% url 'global_status' %}">Global</a></li> -->
+          <li><a href="{% url 'helpline' %}">Test Centers</a></li>
+          <li><a href="{% url 'covid19' %}">Covid19</a></li>
+          <li>
+            <a id="updateInvoke" class="waves-effect btn white indigo-text">Refresh!</a>
+
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <ul class="sidenav" id="mobile-links">
+    <li><a href="{% url 'india_status' %}">India-stats</a></li>
+    <li><a href="{% url 'states_table' %}">States-stats</a></li>
+    <!-- <li><a href="{% url 'global_status' %}">Global</a></li> -->
+    <li><a href="{% url 'helpline' %}">Test Centers</a></li>
+    <li><a href="{% url 'covid19' %}">Covid19</a></li>
+    <li><a id="updateInvoke2" class="waves-effect btn white indigo-text">Refresh!</a></li>
+  </ul>
+
+
+
+  <div class="fixed-action-btn modal-trigger" href="#modal1">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">search</i>
+  </a>
+</div>
+
+<div id="modal1" class="modal">
+    <div class="modal-content">
+      <h5 id="det123">Find details of your area</h5>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div id="inp123" class="input-field col s12 l12 m12">
+            <input placeholder="Varanasi-(District name)" id="district_name" type="text" class="validate">
+        </div>
+        <div class="col s12">
+          <div class="container right">
+
+          </div>
+        </div>
+      <div class="col" id="result">
+
+      </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+        <a id="finddistrict" class="waves-effect btn white indigo-text">Find!</a>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+  $("#updateInvoke").click(function () {
+
+    $.ajax({
+      url: '/ajax/update-data',
+      success: function (data) {
+          M.toast({html: data.message})
+      }
+    });
+
+  });
+
+  $("#updateInvoke2").click(function () {
+
+    $.ajax({
+      url: '/ajax/update-data',
+      success: function (data) {
+          M.toast({html: data.message})
+      }
+    });
+
+  });
+
+
+
+  $("#finddistrict").click(function () {
+    var district = $("#district_name").val();
+    if(district){
+      $.ajax({
+        url: '/ajax/get-details',
+        data: {
+          'district_name': district
+        },
+        dataType: 'json',
+        success: function (data) {
+          if(data.foundflag){
+            if(data.exactflag){
+              document.getElementById("result").innerHTML =
+                  "<h6>Name-"+data.dist_name+"</h6>"+
+                  "<h6>Case-count-"+data.dist_conf+"</h6>"+
+                  "<h6>State Name -"+data.dist_state+"</h6>"+
+                  "<h6>State Case-count -"+data.dist_state_count+"</h6>"
+            }
+            else{
+              document.getElementById("result").innerHTML =
+                  "<h6 class='red-text'>Not found, Suggestion</h6>"+
+                  "<h6>Name-"+data.dist_name+"</h6>"+
+                  "<h6>Case-count-"+data.dist_conf+"</h6>"+
+                  "<h6>State Name -"+data.dist_state+"</h6>"+
+                  "<h6>State Case-count -"+data.dist_state_count+"</h6>"
+            }
+          }
+          else{
+            document.getElementById("result").innerHTML =
+                "<h6 class='red-text'>Not Found</h6>";
+          }
+        }
+      });
+    }
+    else{
+      document.getElementById("result").innerHTML =
+          "<h6 class='red-text'>Enter some value</h6>";
+    }
+  });
+</script>
+
+
+
+
+{% block content %}
+{% endblock %}
+
+
+
+
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $('.sidenav').sidenav();
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+      var instances = M.AutoInit();
+      });
+  </script>
+
+
+  <!-- Counter -->
+  <script type="text/javascript">
+  $('.counter-count').each(function () {
+        $(this).prop('Counter',0).animate({
+            Counter: $(this).text()
+        }, {
+            duration: 900,
+            easing: 'swing',
+            step: function (now) {
+                $(this).text(Math.ceil(now));
+            }
+        });
+    });
+
+  </script>
+  <!-- Counter -->
+</body>
+
+
+
+
+
+        <footer class="page-footer indigo">
+          <div class="container">
+            <div class="row">
+              <div class="col l6 s12">
+                <h5 class="white-text">Covid19Track</h5>
+                <p class="grey-text text-lighten-4">This website is created and maintained by Abhishek Tiwari <br>
+                   </p>
+              </div>
+              <div class="col l4 offset-l2 s12">
+                <h5 class="white-text"></h5>
+                <ul>
+                  <li><a class="grey-text text-lighten-3" href="{% url 'states_table' %}">States-stats</a></li>
+                  <li><a class="grey-text text-lighten-3" href="{% url 'covid19' %}">Covid19</a></li>
+                  <li><a class="grey-text text-lighten-3" href="{% url 'helpline' %}">Test Centers</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+            © 2020
+            <a class="grey-text text-lighten-4 right" href="#!"></a>
+            </div>
+          </div>
+        </footer>
+
+
+
+</html>

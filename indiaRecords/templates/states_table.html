@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}
+Indian-States
+{% endblock %}
+{% load mathfilters %}
+{% load static %}
+
+{% block content %}
+<style media="screen">
+  .custom{
+    margin-left:10px;
+  }
+  .cusrow{
+    margin-top:10px;
+    height:50px;
+  }
+  .padding_down{
+    padding:20px;
+    padding-bottom:40px;
+  }
+  .black-text li a{
+  color: black;
+ }
+ .cuswidth{
+   width:100%;
+ }
+ .scroll{
+   height:600px;
+   border:solid 2px #3f51b5;
+   overflow:scroll;
+   overflow-x:hidden;
+   overflow-y:scroll;
+ }
+</style>
+<div class="custom">
+  <div class="container padding_down shadow">
+    <div class="row">
+      <h3> All States and UTs Overview </h3>
+      <div class="col s12">
+        #Click on state name for detailed view
+      </div>
+      <div class="col s4 l2 m3">
+        <div class="progress green lighten-4">
+            <div class="determinate green darken-2" style="width: 40%"> represent recovery rate</div>
+        </div>
+      </div>
+      <div class="col s8 l10 m9">
+        Represents recovery rate
+      </div>
+
+    </div>
+
+  </div>
+  <div class="container cuswidth">
+  <div class="row">
+
+    {% for state,districts in statedata.items %}
+    <div class="col s2 m1 l1 cusrow">
+      <div class="shadow text-center">
+
+        <a class="black-text" href="{% url 'state_status' state.statecode %}">
+            <h6>{{ state.name }}</h6>
+        </a>
+
+          <div class="progress green lighten-4">
+              <div class="determinate green darken-2" style="width: {{ state.recovered|div:state.confirmed|mul:100|floatformat:2 }}%"></div>
+          </div>
+      </div>
+    </div>
+    <div class="col s10 m5 l5">
+      <ul class="collapsible popout">
+
+
+
+
+        <li>
+          <div class="collapsible-header">
+
+            <!-- <div class="row padding_zero"> -->
+
+              <div class="col s4 m4 l4  padding_zero">
+                Total Cases
+                <div class="shadowblue">
+                  {{ state.confirmed }}
+                </div>
+              </div>
+
+              <div class="col s4 m4 l4 padding_zero">
+                Recovered
+                <div class="shadowgreen">
+                  {{ state.recovered }}
+                </div>
+              </div>
+
+              <div class="col s4 m4 l4 padding_zero">
+                Deaths
+                <div class="shadowred">
+                  {{ state.deaths }}
+                </div>
+              </div>
+            <!-- </div> -->
+
+          </div>
+          <div class="collapsible-body">
+            <span>
+              <table class="highlight">
+                <thead>
+                  <tr>
+                      <th>District Name</th>
+                      <th>Confirmed Case</th>
+                  </tr>
+                </thead>
+
+                <tbody class="subtable">
+                  {% for distt in districts %}
+                  <tr>
+                    <td>{{ distt.name }}</td>
+                    <td>{{ distt.confirmed }}</td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </span>
+          </div>
+        </li>
+
+
+
+      </ul>
+
+
+    </div>
+    {% endfor %}
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

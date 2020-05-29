@@ -1,0 +1,681 @@
+
+{% extends 'base.html' %}
+{% block title %}
+India-Status
+{% endblock %}
+{% load mathfilters %}
+{% load static %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+google.load('visualization', '1', {'packages': ['geochart']});
+google.setOnLoadCallback(drawVisualization);
+
+function drawVisualization() {
+var data = google.visualization.arrayToDataTable({{ mapdatalist |safe}});
+
+var opts = {
+  region: 'IN',
+  displayMode: 'regions',
+  resolution: 'provinces',
+  colorAxis: {colors: ['#ffebee', '#f44336']},
+};
+var geochart = new google.visualization.GeoChart(
+    document.getElementById('visualization'));
+geochart.draw(data, opts);
+};
+
+
+</script>
+
+<style media="screen">
+  .centeralign{
+    text-align: center;
+  }
+  #visualization{
+    border: 0!important;
+  }
+
+</style>
+
+
+
+
+<div class="container widthextra">
+  <div class="heading padding_zero-fixed">
+    <h4 class="shadow">
+      Daily Counter | India
+    </h4>
+    <small>*Last updated on {{ lastupdated }}</small>
+
+    <div class="row">
+
+
+        <div class="col s6 m4 l2">
+          <div class="card ">
+            <div class="card-content shadowblue">
+              <span class="card-title counter-count purple-text">{{ indconfirmed }}</span>
+              <p>
+                Total Cases <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowpurple">
+              <span class="card-title counter-count indigo-text">{{ indactive }}</span>
+              <p>
+                Active Cases <br>
+
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowgreen">
+              <span class="card-title counter-count green-text">{{ indrecovered }}</span>
+              <p>
+                Recovered <br>
+
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowred">
+              <span class="card-title counter-count deathtext">{{ inddeaths }}</span>
+              <p>
+                Deaths <br>
+
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col s6 m4 l2">
+          <div class="card">
+            <div class="card-content shadowindigo">
+              <span class="card-title red-text"> {{ inddeaths|div:indconfirmed|mul:100|floatformat:2 }}%</span>
+              <p>
+                Mortality rate <br>
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col s6 m4 l2">
+          <div class="card ">
+            <div class="card-content shadowteal">
+              <span class="card-title blue-text">{{ indrecovered|div:indconfirmed|mul:100|floatformat:2 }}%</span>
+              <p>
+                Recovery Rate <br>
+
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+    </div>
+    <!-- row -->
+    </div>
+    <!-- heading end -->
+
+<div class="divider pdd"></div>
+
+    <div class="row">
+      <div class="col hide-on-small-only m6 l5">
+
+        <div class="card">
+        <div class="card-tabs">
+          <ul class="tabs tabs-fixed-width">
+            <li class="tab"><a href="#myChart_bar">Daily Cases</a></li>
+            <li class="tab"><a class="active" href="#myChart_line">Growth Chart</a></li>
+
+          </ul>
+        </div>
+        <div class="card-content ">
+          <!-- <div id="test4">Test 1</div> -->
+          <canvas id="myChart_bar" width="400" height="400"></canvas>
+          <!-- <div id="test5">Test 2</div> -->
+          <canvas id="myChart_line" width="400" height="400"></canvas>
+
+        </div>
+        </div>
+
+      </div>
+      <div class="col s12 m6 l7">
+      
+       <div class="row padding_zero">
+         <div class="col s6">
+           <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for State.." title="Type in a State">
+         </div>
+       </div>
+       
+            
+      
+         
+       
+     
+
+
+
+
+        <table class="highlight">
+          <thead>
+            <tr>
+                <th>State Name</th>
+                <th class="centeralign">Confirmed Case</th>
+                <th class="centeralign">Recovered Case</th>
+                <th class="centeralign">Deceased Case</th>
+            </tr>
+          </thead>
+
+          <tbody id="state">
+            {% for state in statedata %}
+            <tr>
+
+              <td> <a href="{% url 'state_status' state.statecode %}"> {{ state.name }} </a>  </td>
+              <td class="centeralign"> {{ state.confirmed }}  </td>
+              <td class="centeralign"> {{ state.recovered }} <small class="green-text">({{ state.recovered|div:state.confirmed|mul:100|floatformat:2 }}%)</small> </td>
+              <td class="centeralign"> {{ state.deaths }} <small class="red-text">({{ state.deaths|div:state.confirmed|mul:100|floatformat:2 }}%)</small> </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="divider pdd"></div>
+      </div>
+
+
+
+
+      <div class="col hide-on-med-and-up s12">
+
+        <div class="card">
+        <div class="card-tabs">
+          <ul class="tabs tabs-fixed-width">
+            <li class="tab"><a href="#myChart_line1">Growth Chart</a></li>
+            <li class="tab"><a class="active" href="#myChart_bar1">Daily Cases</a></li>
+
+          </ul>
+        </div>
+        <div class="card-content ">
+          <!-- <div id="test4">Test 1</div> -->
+          <canvas id="myChart_line1" width="400" height="400"></canvas>
+          <!-- <div id="test5">Test 2</div> -->
+          <canvas id="myChart_bar1" width="400" height="400"></canvas>
+
+        </div>
+        </div>
+
+      </div>
+
+
+
+      <div class="col s12 l12 m12">
+        <div class="divider margin_top"> </div>
+
+        <h4 class="shadow"> Five Worst Affected States </h4>
+      <small>  #Length of bar represent the number of cases </small>
+      </div>
+
+
+      <div class="box">
+
+      <div class="row">
+        <div class="col s12 m6 l5 padding_top heightMatch hide-on-small-only">
+          <canvas id="myChart_horizontal_bar" width="400" height="400">Test 2</canvas>
+
+        </div>
+        <div class="col s12 m6 l7 padding_top">
+        <small>  #Progress bar represent recovery rate </small>
+          <ul class="collapsible popout">
+
+
+            {% for top,topd in top5.items %}
+
+            <li>
+              <div class="collapsible-header">
+
+                <div class="row padding_zero">
+                  <div class="col s12 m12 l4 padding_zero">
+                    <h6>{{ top.name }}</h6>
+                    <div class="progress green lighten-4">
+                        <div class="determinate green darken-2" style="width: {{ top.recovered|div:top.confirmed|mul:100|floatformat:2 }}%"></div>
+                    </div>
+                  </div>
+                  <div class="col s4 m4 l3  padding_zero">
+                    Confirmed Cases
+                    <div>
+                      {{ top.confirmed }}
+                    </div>
+                  </div>
+
+                  <div class="col s4 m4 l3 padding_zero">
+                    Recovered
+                    <div>
+                      {{ top.recovered }}
+                    </div>
+                  </div>
+
+                  <div class="col s4 m4 l2 padding_zero">
+                    Deaths
+                    <div>
+                      {{ top.deaths }}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div class="collapsible-body">
+                <span>
+                  <table class="highlight">
+                    <thead>
+                      <tr>
+                          <th>District Name</th>
+                          <th>Confirmed Case</th>
+                      </tr>
+                    </thead>
+
+                    <tbody class="subtable">
+                      {% for distt in topd %}
+                      <tr>
+                        <td>{{ distt.name }}</td>
+                        <td>{{ distt.confirmed }}</td>
+                      </tr>
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+                </span>
+              </div>
+            </li>
+
+            {% endfor %}
+
+          </ul>
+        </div>
+
+    </div>
+  </div>
+
+<!-- Hide on large device -->
+
+
+
+  </div>
+  <div class="row">
+    <div class="col s12 l12 m12">
+      <div class="divider margin_top"> </div>
+
+      <h4 class="shadow"> Cases in States </h4>
+    <small>  #Height of bar represent the number of cases  </small>
+
+    </div>
+
+    <div class="col s12 l12 m12 hide-on-small-only">
+      <canvas id="myChart_state_bar" width="100%" height="40%"> </canvas>
+    </div>
+
+
+    <div class="col s12 hide-on-med-and-up">
+      <canvas id="myChart_state_bar1" width="400" height="400" style="margin: 1em"> </canvas>
+    </div>
+
+
+  </div>
+  <div class="row">
+    <div class="col s12 l12 m12">
+      <div class="divider margin_top"> </div>
+
+      <h4 class="shadow"> Representation on Map </h4>
+    <small> #Darker shade represent more no of cases  </small>
+
+    </div>
+
+    <div class="col s12 l12 m12">
+      <div id="visualization" style="margin: 1em"> </div>
+    </div>
+
+  </div>
+</div>
+<!-- container -->
+<!-- bar chart -->
+<script>
+var ctx = document.getElementById('myChart_bar').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ indiatimeserieslabel |safe}},
+        datasets: [{
+            label: 'No of Daily cases',
+            data: {{ indiatimeseriesdailydata|safe }},
+            backgroundColor: {{ barcolorlist |safe}},
+            borderColor: {{ barcolorlist |safe}},
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+<!-- bar Chart -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- line Chart -->
+<script>
+var ctx = document.getElementById('myChart_line').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+      labels: {{ indiatimeserieslabel |safe}},
+      datasets: [{
+          label: 'Total Cases',
+          data: {{inditimeseriescummdata | safe}},
+          backgroundColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+      }]
+  },
+  options: {
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true
+              }
+          }]
+      }
+  }
+});
+</script>
+
+<!-- line Chart  -->
+
+
+<!-- multiple line chart for all states -->
+
+
+
+<script>
+var ctx = document.getElementById('myChart_horizontal_bar').getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'horizontalBar',
+data: {
+    labels: {{ top5namelabel |safe}},
+    datasets: [{
+        label: 'No of Cases',
+        data:  {{ top5data |safe}},
+        backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 4)',
+                'rgba(54, 162, 235, 4)',
+                'rgba(255, 206, 86, 4)',
+                'rgba(75, 192, 192, 4)',
+                'rgba(153, 102, 255, 4)'
+            ],
+        borderWidth: 1,
+    }]
+},
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
+        }]
+    }
+}
+});
+</script>
+
+
+<!-- multiple line chart for all states -->
+<!--
+chart for all states  -->
+
+
+<script>
+var ctx = document.getElementById('myChart_state_bar').getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'bar',
+data: {
+    labels: {{ statenameslabel |safe}},
+    datasets: [{
+        label: 'No of Cases',
+        data:  {{ statecasedata |safe}},
+        backgroundColor: {{barcolorlistforstate|safe}},
+            borderColor: {{barcolorlistforstate|safe}},
+        borderWidth: 1,
+    }]
+},
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
+        }]
+    }
+}
+});
+</script>
+
+
+
+<!-- chart for all states -->
+
+
+
+
+
+<!--chart for all states  -->
+
+
+<script>
+var ctx = document.getElementById('myChart_state_bar1').getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'bar',
+data: {
+    labels: {{ statenameslabel |safe}},
+    datasets: [{
+        label: 'No of Cases',
+        data:  {{ statecasedata |safe}},
+        backgroundColor: {{barcolorlistforstate|safe}},
+            borderColor: {{barcolorlistforstate|safe}},
+        borderWidth: 1,
+    }]
+},
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+            }
+        }]
+    }
+}
+});
+</script>
+
+
+
+<!-- chart for all states -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- bar chart -->
+<script>
+var ctx = document.getElementById('myChart_bar1').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ indiatimeserieslabel |safe}},
+        datasets: [{
+            label: 'No of Daily cases',
+            data: {{ indiatimeseriesdailydata|safe }},
+            backgroundColor: {{ barcolorlist |safe}},
+            borderColor: {{ barcolorlist |safe}},
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+<!-- bar Chart -->
+
+
+<!-- line Chart -->
+<script>
+var ctx = document.getElementById('myChart_line1').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+      labels: {{ indiatimeserieslabel |safe}},
+      datasets: [{
+          label: 'Total Cases',
+          data: {{inditimeseriescummdata | safe}},
+          backgroundColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+      }]
+  },
+  options: {
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true
+              }
+          }]
+      }
+  }
+});
+</script>
+
+<!-- line Chart  -->
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("state");
+    li = ul.getElementsByTagName("tr");
+
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
